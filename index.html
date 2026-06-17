@@ -1,788 +1,302 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>5+1 agenzy — Marketing Agency</title>
-  <meta name="description" content="5+1 agenzy: pacchetti social per crescere con contenuti, strategia e performance." />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Bar Rep Tracker MVP V4 Chrome iPhone</title>
   <style>
     :root{
-      --bg0:#05070d;
-      --fg:#e9ecf2;
-      --muted:rgba(233,236,242,.72);
-      --card:rgba(255,255,255,.08);
-      --card2:rgba(255,255,255,.06);
-      --stroke:rgba(255,255,255,.14);
-      --shadow: 0 20px 60px rgba(0,0,0,.55);
-      --radius: 22px;
-      --radius2: 28px;
-      --max: 1120px;
-      --accentA: #7c3aed;
-      --accentB: #22d3ee;
-      --accentC: #a3ff7a;
+      --bg:#05070b; --panel:#0b121d; --panel2:#101a28;
+      --cyan:#00e5ff; --green:#38ff88; --red:#ff4f6d; --yellow:#ffd166;
+      --text:#eef7ff; --muted:#93a7bb; --border:rgba(0,229,255,.22);
     }
-
     *{box-sizing:border-box}
-    html,body{height:100%}
-
-    body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--fg);
-      background:
-        radial-gradient(1200px 800px at 20% 15%, rgba(124,58,237,.35), transparent 60%),
-        radial-gradient(900px 700px at 85% 20%, rgba(34,211,238,.25), transparent 60%),
-        radial-gradient(900px 700px at 60% 95%, rgba(163,255,122,.18), transparent 60%),
-        linear-gradient(180deg, #05070d 0%, #070a12 40%, #05070d 100%);
-      overflow-x:hidden;
-    }
-
-    /* subtle noise */
-    body:before{
-      content:"";
-      position:fixed; inset:0;
-      pointer-events:none;
-      z-index:0;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
-      mix-blend-mode:overlay;
-      opacity:.12;
-    }
-
-    /* watermark logo */
-    body:after{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:0; /* dietro al contenuto */
-      background-image: url("https://console.yorapp.it/personalfiles/2367/image/ChatGPT%20Image%201%20gen%202026%2C%2022_58_33.png");
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: min(900px, 92vw);
-      opacity: .08;
-      filter: blur(0px);
-      transform: translateZ(0);
-    }
-
-    a{color:inherit}
-
-    /* contenuto sopra i layer */
-    .wrap{
-      max-width:var(--max);
-      margin:0 auto;
-      padding:28px 20px 70px;
-      position:relative;
-      z-index:2;
-    }
-
-    .nav{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:16px;
-      padding:14px 16px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.04);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-radius: 999px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
-      position:sticky; top:16px; z-index:50;
-    }
-
-    .brand{
-      display:flex; align-items:center; gap:10px;
-      font-weight:650; letter-spacing:.2px;
-    }
-
-    .logo{
-      width:34px;
-      height:34px;
-      border-radius: 11px;
-      border:1px solid rgba(255,255,255,.18);
-      box-shadow: 0 12px 30px rgba(0,0,0,.35);
-      background: rgba(255,255,255,.06);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-      flex: 0 0 auto;
-    }
-    .logo img{
-      width:70%;
-      height:70%;
-      object-fit: contain;
-      display:block;
-    }
-
-    .navlinks{
-      display:flex; gap:16px; align-items:center;
-      color:var(--muted);
-      font-size:14px;
-    }
-    .navlinks a{ text-decoration:none; padding:8px 10px; border-radius: 999px; }
-    .navlinks a:hover{ background: rgba(255,255,255,.06); color: var(--fg); }
-
-    .cta{ display:flex; gap:10px; align-items:center; }
-
-    .btn{
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(255,255,255,.06);
-      color:var(--fg);
-      padding:10px 14px;
-      border-radius: 999px;
-      text-decoration:none;
-      font-weight:600;
-      font-size:14px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transition: transform .15s ease, background .15s ease, border-color .15s ease;
-      will-change: transform;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      line-height:1;
-      white-space:nowrap;
-    }
-    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.22); }
-    .btn.primary{
-      border:1px solid rgba(255,255,255,.22);
-      background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(34,211,238,.80));
-      box-shadow: 0 18px 50px rgba(124,58,237,.22);
-    }
-    .btn.primary:hover{ transform: translateY(-1px) scale(1.01); }
-
-    .hero{
-      padding:54px 6px 26px;
-      display:grid;
-      grid-template-columns: 1.25fr .75fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    .badge{
-      display:inline-flex; align-items:center; gap:8px;
-      font-size:13px;
-      color: rgba(255,255,255,.82);
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      padding:8px 12px;
-      border-radius: 999px;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-    .dot{
-      width:8px; height:8px; border-radius:999px;
-      background: linear-gradient(135deg, var(--accentB), var(--accentA));
-      box-shadow: 0 0 0 4px rgba(34,211,238,.12);
-    }
-
-    h1{
-      margin:16px 0 10px;
-      font-size: clamp(34px, 4vw, 52px);
-      line-height:1.05;
-      letter-spacing:-.02em;
-    }
-
-    .sub{
-      margin:0 0 18px;
-      color: var(--muted);
-      font-size: 16px;
-      line-height:1.6;
-      max-width: 56ch;
-    }
-    .heroActions{display:flex; gap:12px; flex-wrap:wrap}
-
-    .glassPanel{
-      border:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border-radius: var(--radius2);
-      padding:18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-    }
-
-    .sideTitle{
-      font-weight:700;
-      margin:2px 0 8px;
-      letter-spacing:-.01em;
-    }
-    .sideList{
-      margin:0; padding-left: 18px;
-      color: rgba(233,236,242,.80);
-      font-size: 14px;
-      line-height:1.7;
-    }
-
-    .kpi{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      margin-top:14px;
-    }
-    .kpi .tile{
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      border-radius: 16px;
-      padding:12px;
-    }
-    .kpi .big{font-size:18px; font-weight:750}
-    .kpi .small{font-size:12px; color:rgba(233,236,242,.72)}
-
-    .sectionTitle{
-      margin: 28px 6px 14px;
-      display:flex; align-items:flex-end; justify-content:space-between;
-      gap:16px;
-    }
-    .sectionTitle h2{
-      margin:0;
-      font-size: 20px;
-      letter-spacing:-.01em;
-    }
-    .sectionTitle p{
-      margin:0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:16px;
-      margin-top: 12px;
-    }
-
-    .card{
-      position:relative;
-      border-radius: var(--radius);
-      padding: 18px;
-      border:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      box-shadow: 0 18px 55px rgba(0,0,0,.45);
-      overflow:hidden;
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
-      min-height: 320px;
-    }
-    .card:hover{
-      transform: translateY(-3px);
-      border-color: rgba(255,255,255,.22);
-      background: linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.05));
-    }
-    .card:before{
-      content:"";
-      position:absolute; inset:-120px -120px auto auto;
-      width:260px; height:260px; border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.25), transparent 55%);
-      opacity:.22;
-      transform: rotate(12deg);
-    }
-
-    .tag{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size: 12px;
-      font-weight:650;
-      padding: 7px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      color: rgba(255,255,255,.88);
-      position:relative;
-      z-index:1;
-    }
-
-    .price{
-      font-size: 28px;
-      font-weight: 780;
-      letter-spacing:-.02em;
-      margin: 14px 0 6px;
-      position:relative;
-      z-index:1;
-    }
-    .per{
-      font-size: 13px;
-      color: rgba(233,236,242,.72);
-      font-weight: 600;
-      margin-left:6px;
-    }
-    .desc{
-      margin: 4px 0 12px;
-      color: rgba(233,236,242,.78);
-      font-size: 14px;
-      line-height:1.5;
-      position:relative;
-      z-index:1;
-    }
-    .list{
-      margin: 0;
-      padding-left: 18px;
-      color: rgba(233,236,242,.84);
-      font-size: 14px;
-      line-height:1.7;
-      position:relative;
-      z-index:1;
-    }
-    .divider{
-      height:1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
-      margin: 14px 0;
-      position:relative;
-      z-index:1;
-    }
-    .cardActions{
-      display:flex;
-      gap:10px;
-      margin-top: 16px;
-      flex-wrap: wrap;
-      position:relative;
-      z-index:1;
-    }
-    .hint{
-      margin:16px 6px 0;
-      color: rgba(233,236,242,.68);
-      font-size: 12px;
-      line-height:1.6;
-    }
-
-    .extras{
-      margin-top: 18px;
-      display:grid;
-      grid-template-columns: 1.3fr .7fr;
-      gap: 16px;
-    }
-    .pillgrid{
-      display:flex; flex-wrap:wrap; gap:10px;
-      margin-top: 10px;
-    }
-    .pill{
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      padding: 10px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      color: rgba(233,236,242,.86);
-    }
-
-    /* RESULTS – clean layout */
-    .resultsGrid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:12px;
-      margin-top: 12px;
-    }
-
-    .resultCard{
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      border-radius: 18px;
-      padding: 12px;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 14px 45px rgba(0,0,0,.35);
-      transition: transform .16s ease, border-color .16s ease, background .16s ease;
-      text-decoration:none;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      overflow:hidden;
-    }
-    .resultCard:hover{
-      transform: translateY(-2px);
-      border-color: rgba(255,255,255,.22);
-      background: rgba(255,255,255,.07);
-    }
-
-    .resultThumb{
-      width:100%;
-      aspect-ratio: 9 / 16;
-      border-radius: 14px;
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-    }
-    .resultThumb img{
-      width:100%;
-      height:100%;
-      object-fit: cover;
-      display:block;
-    }
-
-    .resultTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:10px;
-    }
-    .resultTitle{
-      font-weight:700;
-      letter-spacing:-.01em;
-      line-height:1.25;
-    }
-    .chip{
-      font-size:11px;
-      font-weight:700;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      color: rgba(255,255,255,.86);
-      white-space:nowrap;
-    }
-
-    .resultMeta{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      color: rgba(233,236,242,.72);
-      font-size:12px;
-      line-height:1.5;
-    }
-    .resultMeta span{
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      padding:6px 10px;
-      border-radius: 999px;
-    }
-
-    .resultCta{
-      margin-top:auto;
-      color: rgba(233,236,242,.86);
-      font-size:13px;
-      font-weight:650;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      opacity:.92;
-    }
-    .resultCta .arrow{ opacity:.85; }
-
-    footer{
-      margin-top: 26px;
-      padding: 18px 6px 0;
-      color: rgba(233,236,242,.62);
-      font-size: 12px;
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    /* responsive */
-    @media (max-width: 980px){
-      .hero{ grid-template-columns: 1fr; }
-      .grid{ grid-template-columns: 1fr; }
-      .extras{ grid-template-columns: 1fr; }
-      .resultsGrid{ grid-template-columns: 1fr; }
-      .navlinks{ display:none; }
-    }
+    html,body{margin:0;min-height:100%;background:#05070b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+    body{padding:18px;background:radial-gradient(circle at top,rgba(0,229,255,.16),transparent 35%),linear-gradient(180deg,#07101a,#03050a)}
+    .app{max-width:580px;margin:0 auto}
+    .box{border:1px solid var(--border);border-radius:24px;background:linear-gradient(180deg,rgba(15,25,39,.97),rgba(6,10,16,.94));padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+    h1{font-size:30px;margin:0 0 8px;letter-spacing:-.04em}
+    p{margin:0;color:var(--muted);line-height:1.45}
+    .status{margin-top:16px;padding:13px;border-radius:16px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.045);font-size:14px;line-height:1.45}
+    .ok{border-color:rgba(56,255,136,.35);color:var(--green)}
+    .warn{border-color:rgba(255,209,102,.35);color:var(--yellow)}
+    .err{border-color:rgba(255,79,109,.4);color:#ffc1cb}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+    .card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px;min-height:96px}
+    .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.09em}
+    .value{font-size:38px;font-weight:900;line-height:1;margin-top:8px}
+    .unit{font-size:14px;color:var(--muted);margin-left:4px}
+    .controls{display:grid;gap:10px;margin-top:16px}
+    button{width:100%;border:0;border-radius:16px;padding:16px;background:linear-gradient(135deg,var(--cyan),#5cf6ff);color:#001018;font-size:17px;font-weight:900;cursor:pointer;touch-action:manipulation}
+    button.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.11)}
+    button.danger{background:rgba(255,79,109,.13);color:#ffd1d8;border:1px solid rgba(255,79,109,.3)}
+    button:disabled{opacity:.45}
+    .debug{margin-top:14px;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;line-height:1.35;color:#a9bdcd;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:11px;max-height:170px;overflow:auto}
+    .help{margin-top:16px;background:rgba(16,26,40,.74);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:14px}
+    .help b{color:#fff}
+    .help ol{margin:8px 0 0;padding-left:20px;color:var(--muted);line-height:1.55;font-size:14px}
   </style>
 </head>
-
 <body>
-  <div class="wrap">
+  <main class="app">
+    <section class="box">
+      <h1>Bar Rep Tracker</h1>
+      <p>MVP V4 ottimizzata per Chrome/iPhone. Questa versione verifica se Google Sites o iframe stanno bloccando i sensori.</p>
 
-    <header class="nav">
-      <div class="brand">
-        <div class="logo">
-          <img alt="5+1 agenzy logo" src="https://console.yorapp.it/personalfiles/2367/image/ChatGPT%20Image%201%20gen%202026%2C%2022_58_33.png">
-        </div>
-        <div>
-          <div style="font-size:14px; line-height:1; opacity:.95;">5+1 agenzy</div>
-          <div style="font-size:12px; line-height:1.2; color:rgba(233,236,242,.68);">Marketing Agency</div>
-        </div>
+      <div id="status" class="status warn">Premi “Testa / Attiva sensori”.</div>
+
+      <div class="grid">
+        <div class="card"><div class="label">Ripetizioni</div><div id="reps" class="value">0</div></div>
+        <div class="card"><div class="label">Movimento</div><div class="value"><span id="movement">0</span><span class="unit">%</span></div></div>
+        <div class="card"><div class="label">Velocità stimata</div><div class="value"><span id="speed">0.00</span><span class="unit">m/s</span></div></div>
+        <div class="card"><div class="label">Tempo</div><div id="timer" class="value">00:00</div></div>
       </div>
 
-      <nav class="navlinks" aria-label="Sezioni">
-        <a href="#pacchetti">Pacchetti</a>
-        <a href="#servizi">Servizi aggiuntivi</a>
-        <a href="#promo">Promo</a>
-        <a href="#risultati">Risultati</a>
-        <a href="#contatti">Contatti</a>
-      </nav>
-
-      <div class="cta">
-        <a class="btn" href="#pacchetti">Vedi pacchetti</a>
-        <a class="btn primary" href="#contatti">Richiedi preventivo</a>
-      </div>
-    </header>
-
-    <section class="hero">
-      <div>
-        <span class="badge"><span class="dot"></span>Contenuti + Strategia + Risultati</span>
-        <h1>La tua presenza social,<br>pulita e potente.</h1>
-        <p class="sub">
-          Con <strong>5+1 agenzy</strong> scegli un pacchetto chiaro, una produzione costante e una strategia semplice da eseguire.
-          Perfetto per attività locali, brand e aziende che vogliono crescere sul serio.
-        </p>
-        <div class="heroActions">
-          <a class="btn primary" href="https://wa.me/393756953048" target="_blank" rel="noopener">Parliamone su WhatsApp</a>
-          <a class="btn" href="#pacchetti">Scopri i pacchetti</a>
-        </div>
-        <p class="hint">* Stile minimal, flusso semplice, contenuti ottimizzati per Reel / TikTok / Shorts.</p>
+      <div class="controls">
+        <button id="enableBtn">Testa / Attiva sensori</button>
+        <button id="calibrateBtn" class="secondary" disabled>Calibra da fermo</button>
+        <button id="startBtn" class="secondary" disabled>Avvia serie</button>
+        <button id="resetBtn" class="danger">Reset</button>
       </div>
 
-      <aside class="glassPanel">
-        <div class="sideTitle">Come lavoriamo</div>
-        <ul class="sideList">
-          <li>Produzione contenuti ricorrente</li>
-          <li>Copy ottimizzato e coerente</li>
-          <li>Revisioni incluse per qualità</li>
-          <li>Report & miglioramento continuo</li>
-        </ul>
-        <div class="kpi">
-          <div class="tile">
-            <div class="big">7/7</div>
-            <div class="small">Approccio costante</div>
-          </div>
-          <div class="tile">
-            <div class="big">📈</div>
-            <div class="small">Focus risultati</div>
-          </div>
-        </div>
-      </aside>
+      <div class="help">
+        <b>Se questa pagina è su Google Sites:</b>
+        <ol>
+          <li>non incorporarla come embed;</li>
+          <li>apri il file come pagina diretta HTTPS;</li>
+          <li>meglio: caricala su Netlify, Vercel o GitHub Pages.</li>
+        </ol>
+      </div>
+
+      <div id="debug" class="debug">Debug...</div>
     </section>
+  </main>
 
-    <div class="sectionTitle" id="pacchetti">
-      <div>
-        <h2>Pacchetti</h2>
-        <p>Scegli il livello giusto. Upgrade sempre possibile.</p>
-      </div>
-      <p style="color:rgba(233,236,242,.62); font-size:12px; margin:0;">Prezzi mensili (IVA incl.)</p>
-    </div>
+<script>
+const $ = id => document.getElementById(id);
 
-    <section class="grid">
-      <!-- START -->
-      <article class="card" aria-label="Pacchetto Start">
-        <span class="tag">🔹 PACCHETTO START</span>
-        <div class="price">179€ <span class="per">/ mese</span></div>
-        <p class="desc">Ideale per attività locali o brand che iniziano</p>
+const state = {
+  active:false,
+  calibrated:false,
+  running:false,
+  samples:[],
+  baseline:9.81,
+  lastMagnitude:0,
+  lastT:null,
+  velocity:0,
+  speed:0,
+  reps:0,
+  phase:"low",
+  lastRepT:0,
+  startedAt:null,
+  timer:null,
+  eventsReceived:0
+};
 
-        <div class="divider"></div>
+function inIframe(){
+  try { return window.self !== window.top; }
+  catch(e){ return true; }
+}
 
-        <ul class="list">
-          <li>2 video brevi a settimana (Reel / TikTok / Shorts)</li>
-          <li>1 post fotografico a settimana</li>
-          <li>Copy ottimizzato per social (testo, didascalia e hashtag)</li>
-          <li>1 revisione per contenuto</li>
-          <li>Pianificazione social di lancio</li>
-        </ul>
+function status(text,type="warn"){
+  const s=$("status");
+  s.textContent=text;
+  s.className="status "+type;
+}
 
-        <div class="cardActions">
-          <a class="btn primary" href="https://wa.me/393756953048?text=Ciao%205%2B1%20agenzy%2C%20sono%20interessato%20al%20PACCHETTO%20START.%20Possiamo%20sentirci%3F" target="_blank" rel="noopener">Attiva Start</a>
-          <a class="btn" href="#servizi">Aggiungi servizi</a>
-        </div>
-      </article>
+function debug(extra={}){
+  $("debug").textContent =
+`URL: ${location.href}
+HTTPS/secureContext: ${window.isSecureContext}
+Dentro iframe: ${inIframe()}
+UserAgent: ${navigator.userAgent}
 
-      <!-- GROWTH -->
-      <article class="card" aria-label="Pacchetto Growth">
-        <span class="tag">🔸 PACCHETTO GROWTH</span>
-        <div class="price">349€ <span class="per">/ mese</span></div>
-        <p class="desc">Pacchetto equilibrato per attività che vogliono risultati concreti</p>
+DeviceMotionEvent: ${typeof DeviceMotionEvent}
+DeviceMotion requestPermission: ${typeof DeviceMotionEvent !== "undefined" ? typeof DeviceMotionEvent.requestPermission : "no"}
+DeviceOrientationEvent: ${typeof DeviceOrientationEvent}
+DeviceOrientation requestPermission: ${typeof DeviceOrientationEvent !== "undefined" ? typeof DeviceOrientationEvent.requestPermission : "no"}
 
-        <div class="divider"></div>
+Eventi ricevuti: ${state.eventsReceived}
+Magnitude: ${state.lastMagnitude.toFixed(3)}
+Baseline: ${state.baseline.toFixed(3)}
+Calibrato: ${state.calibrated}
+Running: ${state.running}
 
-        <ul class="list">
-          <li>3 video a settimana (adattati per Reel / TikTok / Shorts)</li>
-          <li>2 post fotografici a settimana</li>
-          <li>Copywriting strategico</li>
-          <li>Pubblicazione su 1 piattaforma (Instagram o TikTok a scelta)</li>
-          <li>Mini report mensile (reach – interazioni – contenuti migliori)</li>
-          <li>2 revisioni per contenuto</li>
-          <li>Pianificazione social di crescita</li>
-        </ul>
+Extra:
+${JSON.stringify(extra,null,2)}`;
+}
 
-        <div class="divider"></div>
-        <p class="desc" style="margin-bottom:0;"><strong>Bonus:</strong> Consulenza contenuti (trend, format, angolazioni)</p>
+function updateUI(){
+  $("reps").textContent=state.reps;
+  $("speed").textContent=Math.max(0,state.speed).toFixed(2);
+  const mov=Math.min(100,Math.round(Math.abs(state.lastMagnitude-state.baseline)*24));
+  $("movement").textContent=mov;
+}
 
-        <div class="cardActions">
-          <a class="btn primary" href="https://wa.me/393756953048?text=Ciao%205%2B1%20agenzy%2C%20sono%20interessato%20al%20PACCHETTO%20GROWTH.%20Vorrei%20info%20e%20tempistiche." target="_blank" rel="noopener">Attiva Growth</a>
-          <a class="btn" href="#servizi">Aggiungi servizi</a>
-        </div>
-      </article>
+function onMotion(e){
+  state.eventsReceived++;
+  const a=e.accelerationIncludingGravity || e.acceleration || {};
+  const x=Number(a.x||0), y=Number(a.y||0), z=Number(a.z||0);
+  const mag=Math.sqrt(x*x+y*y+z*z);
+  state.lastMagnitude=mag || 0;
 
-      <!-- BUSINESS -->
-      <article class="card" aria-label="Pacchetto Business Avanzato">
-        <span class="tag">🔥 PACCHETTO BUSINESS / AVANZATO</span>
-        <div class="price">549€ <span class="per">/ mese</span></div>
-        <p class="desc">Pensato per chi vuole crescere rapidamente in multi-piattaforma</p>
+  if(mag && state.samples.length<120) state.samples.push(mag);
 
-        <div class="divider"></div>
+  const now=performance.now();
+  if(state.lastT){
+    const dt=Math.min(.08,(now-state.lastT)/1000);
+    const acc=(mag-state.baseline);
+    state.velocity=(state.velocity*.92)+(acc*dt);
+    state.speed=Math.abs(state.velocity);
+  }
+  state.lastT=now;
 
-        <p class="desc" style="margin-bottom:8px;"><strong>🎯 Gestione Social Completa</strong></p>
-        <ul class="list">
-          <li>Creazione account (se assenti)</li>
-          <li>3–4 video a settimana</li>
-          <li>2 post fotografici a settimana</li>
-          <li>Copywriting avanzato orientato alla conversione (testo, didascalia e hashtag)</li>
-          <li>Pubblicazione su Instagram, TikTok, YouTube Shorts, Facebook</li>
-        </ul>
+  if(state.running) detectRep(mag,now);
 
-        <div class="divider"></div>
+  updateUI();
+  if(state.eventsReceived % 8 === 0) debug({x,y,z,mag});
+}
 
-        <p class="desc" style="margin-bottom:8px;"><strong>📊 Strategia & Engagement</strong></p>
-        <ul class="list">
-          <li>Pianificazione editoriale strutturata</li>
-          <li>Creazione stories interattive (min. 2 a settimana)</li>
-          <li>Ottimizzazione continua dei contenuti</li>
-          <li>Report mensile dettagliato</li>
-          <li>2 revisioni per contenuto</li>
-        </ul>
+function detectRep(mag,t){
+  const diff=mag-state.baseline;
+  const high=1.05;
+  const low=-0.35;
+  const minGap=520;
 
-        <div class="cardActions">
-          <a class="btn primary" href="https://wa.me/393756953048?text=Ciao%205%2B1%20agenzy%2C%20sono%20interessato%20al%20PACCHETTO%20BUSINESS%20%2F%20AVANZATO.%20Vorrei%20un%20brief%20e%20un%20preventivo." target="_blank" rel="noopener">Attiva Business</a>
-          <a class="btn" href="#promo">Vedi promo</a>
-        </div>
-      </article>
-    </section>
+  if(state.phase==="low" && diff>high){
+    state.phase="high";
+  }
+  if(state.phase==="high" && diff<low && (t-state.lastRepT)>minGap){
+    state.reps++;
+    state.lastRepT=t;
+    state.phase="low";
+  }
+}
 
-    <section class="extras" id="servizi">
-      <div class="glassPanel">
-        <div class="sideTitle">➕ Servizi aggiuntivi (su richiesta)</div>
-        <div style="color:rgba(233,236,242,.70); font-size:13px; line-height:1.6;">
-          Prezzo da concordare — perfetti per spingere performance, conversioni e automazione.
-        </div>
+async function requestPermissionSafely(){
+  const results={};
 
-        <div class="pillgrid" aria-label="Lista servizi aggiuntivi">
-          <span class="pill">Campagne pubblicitarie Meta / TikTok (ADV)</span>
-          <span class="pill">Shooting foto / video</span>
-          <span class="pill">QR Code (menu, pagamenti, gestionali)</span>
-          <span class="pill">Landing page</span>
-          <span class="pill">Automazioni WhatsApp / email</span>
-          <span class="pill">Gestione DM e customer care</span>
-          <span class="pill">Email Marketing (creazione email promozionali)</span>
-          <span class="pill">Invio su database fornito dal cliente</span>
-        </div>
-      </div>
+  if(typeof DeviceOrientationEvent!=="undefined" && typeof DeviceOrientationEvent.requestPermission==="function"){
+    try{ results.orientation=await DeviceOrientationEvent.requestPermission(); }
+    catch(e){ results.orientationError=e.message; }
+  }
 
-      <div class="glassPanel" id="promo">
-        <div class="sideTitle">🎁 Promo attiva — Referral</div>
-        <div style="margin-top:8px; color:rgba(233,236,242,.84); line-height:1.6; font-size:14px;">
-          <strong>👉 Porta un amico</strong><br>
-          • <strong>–80€</strong> sul Pacchetto Business<br>
-          • valido dal <strong>secondo mese</strong>
-        </div>
+  if(typeof DeviceMotionEvent!=="undefined" && typeof DeviceMotionEvent.requestPermission==="function"){
+    try{ results.motion=await DeviceMotionEvent.requestPermission(); }
+    catch(e){ results.motionError=e.message; }
+  }
 
-        <div style="margin-top:14px;">
-          <a class="btn primary" href="https://wa.me/393756953048?text=Ciao%205%2B1%20agenzy%2C%20vorrei%20info%20sulla%20promo%20referral%20(-80%E2%82%AC%20Business)." target="_blank" rel="noopener">Richiedi info</a>
-        </div>
-      </div>
-    </section>
+  return results;
+}
 
-    <!-- RISULTATI (fix mobile perfetto) -->
-    <section class="glassPanel" id="risultati" style="margin-top:16px;">
-      <div class="sectionTitle" style="margin:0 0 10px; padding:0;">
-        <h2>Alcuni risultati</h2>
-        <p>Esempi reali di contenuti pubblicati.</p>
-      </div>
+async function enable(){
+  debug({clicked:true});
 
-      <div class="resultsGrid" aria-label="Risultati / Case study">
+  if(inIframe()){
+    status("La pagina sembra dentro un iframe. Google Sites probabilmente blocca i sensori. Aprila come pagina diretta HTTPS, non incorporata.", "err");
+  }
 
-        <!-- VIDEO 1 -->
-        <a class="resultCard" href="https://www.instagram.com/reel/DEo9sEwO2lL/" target="_blank" rel="noopener">
-          <div class="resultThumb">
-            <img src="https://console.yorapp.it/personalfiles/2367/image/Screenshot%202026-01-01%20232526.png" alt="Reel attività sportiva - Softair">
-          </div>
-          <div class="resultTop">
-            <div class="resultTitle">Reel attività sportiva • Softair</div>
-            <span class="chip">Instagram</span>
-          </div>
-          <div class="resultMeta">
-            <span>Vertical</span>
-            <span>Reel</span>
-          </div>
-          <div class="resultCta">Guarda video <span class="arrow">→</span></div>
-        </a>
+  if(typeof DeviceMotionEvent==="undefined"){
+    status("DeviceMotionEvent non disponibile in questo browser.", "err");
+    debug({error:"DeviceMotionEvent undefined"});
+    return;
+  }
 
-        <!-- VIDEO 2 -->
-        <a class="resultCard" href="https://www.instagram.com/reel/DOtDKECgllg/" target="_blank" rel="noopener">
-          <div class="resultThumb">
-            <img src="https://console.yorapp.it/personalfiles/2367/image/Screenshot%202026-01-02%20165001.png" alt="Reel vendita prodotto - Caccia">
-          </div>
-          <div class="resultTop">
-            <div class="resultTitle">Reel vendita prodotto • Caccia</div>
-            <span class="chip">Instagram</span>
-          </div>
-          <div class="resultMeta">
-            <span>Vertical</span>
-            <span>Promo</span>
-          </div>
-          <div class="resultCta">Guarda video <span class="arrow">→</span></div>
-        </a>
+  const permissions=await requestPermissionSafely();
+  debug({permissions});
 
-        <!-- TEMPLATE: duplica questo blocco per aggiungere altri video -->
-        <!--
-        <a class="resultCard" href="LINK" target="_blank" rel="noopener">
-          <div class="resultThumb">
-            <img src="IMMAGINE" alt="Titolo">
-          </div>
-          <div class="resultTop">
-            <div class="resultTitle">Titolo</div>
-            <span class="chip">TikTok</span>
-          </div>
-          <div class="resultMeta">
-            <span>Vertical</span><span>UGC</span>
-          </div>
-          <div class="resultCta">Guarda video <span class="arrow">→</span></div>
-        </a>
-        -->
+  if((permissions.motion && permissions.motion!=="granted") || (permissions.orientation && permissions.orientation!=="granted")){
+    status("Permesso non concesso dal browser/iOS. Se il demo esterno funziona, il problema è quasi sicuramente Google Sites/iframe.", "err");
+    return;
+  }
 
-      </div>
+  window.removeEventListener("devicemotion", onMotion);
+  window.addEventListener("devicemotion", onMotion, true);
 
-      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
-        <a class="btn" href="#contatti">Vuoi risultati simili?</a>
-        <a class="btn primary" href="https://wa.me/393756953048?text=Ciao%205%2B1%20agenzy%2C%20ho%20visto%20i%20risultati%20in%20landing%20e%20vorrei%20capire%20quale%20pacchetto%20fa%20per%20me." target="_blank" rel="noopener">Scrivici</a>
-      </div>
-    </section>
+  state.active=true;
+  $("calibrateBtn").disabled=false;
+  $("enableBtn").disabled=true;
+  status("Richiesta inviata. Muovi leggermente il telefono: se il valore Movimento sale, i sensori funzionano.", "ok");
 
-    <section class="glassPanel" id="contatti" style="margin-top:16px;">
-      <div class="sectionTitle" style="margin:0 0 10px; padding:0;">
-        <h2>Contatti</h2>
-        <p>Risposta rapida: scrivici e ti guidiamo noi.</p>
-      </div>
+  setTimeout(()=>{
+    if(state.eventsReceived===0){
+      status("Nessun dato sensore ricevuto. Se il sito demo funziona, carica questa app fuori da Google Sites, come link HTTPS diretto.", "err");
+      debug({noEventsAfterMs:2500});
+    } else {
+      status("Sensori attivi. Tieni il telefono fermo e premi Calibra.", "ok");
+    }
+  },2500);
+}
 
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
-        <div style="border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.05); border-radius:18px; padding:14px;">
-          <div style="font-weight:700;">WhatsApp</div>
-          <div style="color:rgba(233,236,242,.72); font-size:13px; margin-top:6px;">
-            Scrivici su WhatsApp: <strong>+39 375 695 3048</strong>
-          </div>
-          <div style="margin-top:10px;">
-            <a class="btn primary" href="https://wa.me/393756953048?text=Ciao%205%2B1%20agenzy%2C%20vorrei%20informazioni%20sui%20pacchetti%20marketing" target="_blank" rel="noopener">Apri WhatsApp</a>
-            <a class="btn" href="mailto:hello@5plus1agenzy.com">Email</a>
-          </div>
-        </div>
+function calibrate(){
+  if(state.samples.length<8){
+    status("Aspetta qualche secondo con il telefono fermo prima di calibrare.", "warn");
+    return;
+  }
+  const recent=state.samples.slice(-60);
+  state.baseline=recent.reduce((a,b)=>a+b,0)/recent.length;
+  state.calibrated=true;
+  $("startBtn").disabled=false;
+  status("Calibrazione completata. Ora puoi avviare la serie.", "ok");
+  debug({calibratedBaseline:state.baseline});
+}
 
-        <div style="border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.05); border-radius:18px; padding:14px;">
-          <div style="font-weight:700;">Brief veloce</div>
-          <div style="color:rgba(233,236,242,.72); font-size:13px; margin-top:6px; line-height:1.6;">
-            1) Settore<br>
-            2) Obiettivo (vendite / lead / brand)<br>
-            3) Canale preferito (IG / TikTok / multi)
-          </div>
-          <div style="margin-top:10px;">
-            <a class="btn" href="#pacchetti">Torna ai pacchetti</a>
-          </div>
-        </div>
-      </div>
-    </section>
+function startStop(){
+  if(!state.calibrated){
+    status("Prima devi calibrare da fermo.", "warn");
+    return;
+  }
 
-    <footer>
-      <div>© <span id="year"></span> 5+1 agenzy — Marketing Agency</div>
-      <div style="opacity:.8;">Minimal landing · Apple-like glass UI</div>
-    </footer>
+  state.running=!state.running;
+  $("startBtn").textContent=state.running ? "Ferma serie" : "Avvia serie";
+  $("startBtn").className=state.running ? "danger" : "secondary";
 
-  </div>
+  if(state.running){
+    state.reps=0;
+    state.velocity=0;
+    state.speed=0;
+    state.phase="low";
+    state.lastRepT=0;
+    state.startedAt=Date.now();
+    state.timer=setInterval(()=>{
+      const sec=Math.floor((Date.now()-state.startedAt)/1000);
+      $("timer").textContent=String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
+    },250);
+    status("Serie avviata.", "ok");
+  } else {
+    clearInterval(state.timer);
+    status("Serie fermata. Reps: "+state.reps, "ok");
+  }
+}
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+function reset(){
+  state.calibrated=false;
+  state.running=false;
+  state.samples=[];
+  state.baseline=9.81;
+  state.velocity=0;
+  state.speed=0;
+  state.reps=0;
+  state.phase="low";
+  clearInterval(state.timer);
+  $("timer").textContent="00:00";
+  $("reps").textContent="0";
+  $("speed").textContent="0.00";
+  $("movement").textContent="0";
+  $("startBtn").textContent="Avvia serie";
+  $("startBtn").className="secondary";
+  $("startBtn").disabled=true;
+  $("calibrateBtn").disabled=!state.active;
+  status("Reset completato.", "warn");
+  debug({reset:true});
+}
+
+$("enableBtn").addEventListener("click", enable);
+$("calibrateBtn").addEventListener("click", calibrate);
+$("startBtn").addEventListener("click", startStop);
+$("resetBtn").addEventListener("click", reset);
+
+debug({ready:true});
+</script>
 </body>
 </html>
