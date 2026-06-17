@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Bar Rep Tracker MVP V4 Chrome iPhone</title>
+  <title>Bar Rep Tracker MVP V5</title>
   <style>
     :root{
       --bg:#05070b; --panel:#0b121d; --panel2:#101a28;
@@ -13,7 +13,7 @@
     *{box-sizing:border-box}
     html,body{margin:0;min-height:100%;background:#05070b;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
     body{padding:18px;background:radial-gradient(circle at top,rgba(0,229,255,.16),transparent 35%),linear-gradient(180deg,#07101a,#03050a)}
-    .app{max-width:580px;margin:0 auto}
+    .app{max-width:620px;margin:0 auto;padding-bottom:40px}
     .box{border:1px solid var(--border);border-radius:24px;background:linear-gradient(180deg,rgba(15,25,39,.97),rgba(6,10,16,.94));padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
     h1{font-size:30px;margin:0 0 8px;letter-spacing:-.04em}
     p{margin:0;color:var(--muted);line-height:1.45}
@@ -26,46 +26,64 @@
     .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.09em}
     .value{font-size:38px;font-weight:900;line-height:1;margin-top:8px}
     .unit{font-size:14px;color:var(--muted);margin-left:4px}
+    .wide{grid-column:1 / -1}
     .controls{display:grid;gap:10px;margin-top:16px}
     button{width:100%;border:0;border-radius:16px;padding:16px;background:linear-gradient(135deg,var(--cyan),#5cf6ff);color:#001018;font-size:17px;font-weight:900;cursor:pointer;touch-action:manipulation}
     button.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.11)}
     button.danger{background:rgba(255,79,109,.13);color:#ffd1d8;border:1px solid rgba(255,79,109,.3)}
     button:disabled{opacity:.45}
+    .summary,.history{margin-top:16px;background:rgba(16,26,40,.74);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:14px}
+    .summary h2,.history h2{font-size:18px;margin:0 0 12px}
+    .summaryGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .mini{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:12px}
+    .mini b{display:block;font-size:22px;margin-top:4px}
+    .repList{margin-top:12px;color:var(--muted);font-size:13px;line-height:1.5}
     .debug{margin-top:14px;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;line-height:1.35;color:#a9bdcd;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:11px;max-height:170px;overflow:auto}
-    .help{margin-top:16px;background:rgba(16,26,40,.74);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:14px}
-    .help b{color:#fff}
-    .help ol{margin:8px 0 0;padding-left:20px;color:var(--muted);line-height:1.55;font-size:14px}
+    .pill{display:inline-flex;align-items:center;border-radius:99px;border:1px solid rgba(0,229,255,.22);background:rgba(0,229,255,.08);color:#bdf8ff;padding:6px 9px;font-size:12px;margin-top:10px}
+    .hidden{display:none}
   </style>
 </head>
 <body>
   <main class="app">
     <section class="box">
       <h1>Bar Rep Tracker</h1>
-      <p>MVP V4 ottimizzata per Chrome/iPhone. Questa versione verifica se Google Sites o iframe stanno bloccando i sensori.</p>
+      <p>MVP V5 — rep completa chiusa solo quando il telefono torna vicino alla posizione originale. Salva ogni serie e genera resoconto finale.</p>
 
       <div id="status" class="status warn">Premi “Testa / Attiva sensori”.</div>
+      <div id="phasePill" class="pill">Fase: in attesa</div>
 
       <div class="grid">
         <div class="card"><div class="label">Ripetizioni</div><div id="reps" class="value">0</div></div>
         <div class="card"><div class="label">Movimento</div><div class="value"><span id="movement">0</span><span class="unit">%</span></div></div>
-        <div class="card"><div class="label">Velocità stimata</div><div class="value"><span id="speed">0.00</span><span class="unit">m/s</span></div></div>
+        <div class="card"><div class="label">Velocità live</div><div class="value"><span id="speed">0.00</span><span class="unit">m/s</span></div></div>
         <div class="card"><div class="label">Tempo</div><div id="timer" class="value">00:00</div></div>
+        <div class="card wide"><div class="label">Rep corrente</div><div id="currentRep" class="value">0.00<span class="unit">s</span></div></div>
       </div>
 
       <div class="controls">
         <button id="enableBtn">Testa / Attiva sensori</button>
-        <button id="calibrateBtn" class="secondary" disabled>Calibra da fermo</button>
+        <button id="calibrateBtn" class="secondary" disabled>Calibra posizione iniziale</button>
         <button id="startBtn" class="secondary" disabled>Avvia serie</button>
-        <button id="resetBtn" class="danger">Reset</button>
+        <button id="finishBtn" class="danger" disabled>Fine serie + resoconto</button>
+        <button id="resetBtn" class="secondary">Reset</button>
       </div>
 
-      <div class="help">
-        <b>Se questa pagina è su Google Sites:</b>
-        <ol>
-          <li>non incorporarla come embed;</li>
-          <li>apri il file come pagina diretta HTTPS;</li>
-          <li>meglio: caricala su Netlify, Vercel o GitHub Pages.</li>
-        </ol>
+      <div id="summary" class="summary hidden">
+        <h2>Resoconto serie</h2>
+        <div class="summaryGrid">
+          <div class="mini"><span class="label">Reps totali</span><b id="sumReps">0</b></div>
+          <div class="mini"><span class="label">Durata serie</span><b id="sumDuration">00:00</b></div>
+          <div class="mini"><span class="label">Velocità max</span><b><span id="sumMaxSpeed">0.00</span> m/s</b></div>
+          <div class="mini"><span class="label">Velocità media</span><b><span id="sumAvgSpeed">0.00</span> m/s</b></div>
+          <div class="mini"><span class="label">Tempo medio rep</span><b><span id="sumAvgRep">0.00</span> s</b></div>
+          <div class="mini"><span class="label">Miglior rep</span><b><span id="sumBestRep">0.00</span> s</b></div>
+        </div>
+        <div id="repList" class="repList"></div>
+      </div>
+
+      <div class="history">
+        <h2>Storico salvato</h2>
+        <div id="historyList" class="repList">Nessuna serie salvata.</div>
       </div>
 
       <div id="debug" class="debug">Debug...</div>
@@ -74,6 +92,7 @@
 
 <script>
 const $ = id => document.getElementById(id);
+const STORAGE_KEY = "bar_rep_tracker_sessions_v5";
 
 const state = {
   active:false,
@@ -81,14 +100,25 @@ const state = {
   running:false,
   samples:[],
   baseline:9.81,
+  restTolerance:0.38,
+  leaveThreshold:0.95,
+  minRepMs:650,
+  maxRepMs:9000,
   lastMagnitude:0,
   lastT:null,
   velocity:0,
   speed:0,
+  maxSpeed:0,
+  speedSamples:[],
   reps:0,
-  phase:"low",
-  lastRepT:0,
+  repPhase:"at_rest",
+  repStartedAt:null,
+  repPeakSpeed:0,
+  repSpeedSamples:[],
+  repDurations:[],
+  repDetails:[],
   startedAt:null,
+  finishedAt:null,
   timer:null,
   eventsReceived:0
 };
@@ -104,23 +134,22 @@ function status(text,type="warn"){
   s.className="status "+type;
 }
 
+function fmtTime(ms){
+  const sec=Math.floor(ms/1000);
+  return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
+}
+
 function debug(extra={}){
   $("debug").textContent =
 `URL: ${location.href}
-HTTPS/secureContext: ${window.isSecureContext}
+secureContext: ${window.isSecureContext}
 Dentro iframe: ${inIframe()}
-UserAgent: ${navigator.userAgent}
-
-DeviceMotionEvent: ${typeof DeviceMotionEvent}
-DeviceMotion requestPermission: ${typeof DeviceMotionEvent !== "undefined" ? typeof DeviceMotionEvent.requestPermission : "no"}
-DeviceOrientationEvent: ${typeof DeviceOrientationEvent}
-DeviceOrientation requestPermission: ${typeof DeviceOrientationEvent !== "undefined" ? typeof DeviceOrientationEvent.requestPermission : "no"}
-
-Eventi ricevuti: ${state.eventsReceived}
+Eventi sensore: ${state.eventsReceived}
 Magnitude: ${state.lastMagnitude.toFixed(3)}
-Baseline: ${state.baseline.toFixed(3)}
-Calibrato: ${state.calibrated}
-Running: ${state.running}
+Baseline/rest: ${state.baseline.toFixed(3)}
+Diff: ${(state.lastMagnitude-state.baseline).toFixed(3)}
+Fase rep: ${state.repPhase}
+Reps: ${state.reps}
 
 Extra:
 ${JSON.stringify(extra,null,2)}`;
@@ -131,6 +160,20 @@ function updateUI(){
   $("speed").textContent=Math.max(0,state.speed).toFixed(2);
   const mov=Math.min(100,Math.round(Math.abs(state.lastMagnitude-state.baseline)*24));
   $("movement").textContent=mov;
+  $("phasePill").textContent="Fase: "+phaseLabel();
+
+  if(state.running && state.repStartedAt){
+    $("currentRep").innerHTML=((performance.now()-state.repStartedAt)/1000).toFixed(2)+'<span class="unit">s</span>';
+  } else {
+    $("currentRep").innerHTML='0.00<span class="unit">s</span>';
+  }
+}
+
+function phaseLabel(){
+  if(!state.running) return "in attesa";
+  if(state.repPhase==="at_rest") return "posizione iniziale";
+  if(state.repPhase==="away") return "rep in corso";
+  return state.repPhase;
 }
 
 function onMotion(e){
@@ -138,67 +181,103 @@ function onMotion(e){
   const a=e.accelerationIncludingGravity || e.acceleration || {};
   const x=Number(a.x||0), y=Number(a.y||0), z=Number(a.z||0);
   const mag=Math.sqrt(x*x+y*y+z*z);
-  state.lastMagnitude=mag || 0;
+  if(!mag) return;
 
-  if(mag && state.samples.length<120) state.samples.push(mag);
+  state.lastMagnitude=mag;
+  if(state.samples.length<180) state.samples.push(mag);
 
   const now=performance.now();
   if(state.lastT){
     const dt=Math.min(.08,(now-state.lastT)/1000);
     const acc=(mag-state.baseline);
-    state.velocity=(state.velocity*.92)+(acc*dt);
+    state.velocity=(state.velocity*.90)+(acc*dt);
     state.speed=Math.abs(state.velocity);
+    if(state.running){
+      state.maxSpeed=Math.max(state.maxSpeed,state.speed);
+      state.speedSamples.push(state.speed);
+    }
   }
   state.lastT=now;
 
-  if(state.running) detectRep(mag,now);
+  if(state.running) detectFullRep(mag,now);
 
   updateUI();
-  if(state.eventsReceived % 8 === 0) debug({x,y,z,mag});
+  if(state.eventsReceived % 10 === 0) debug({x,y,z,mag});
 }
 
-function detectRep(mag,t){
-  const diff=mag-state.baseline;
-  const high=1.05;
-  const low=-0.35;
-  const minGap=520;
+function detectFullRep(mag,t){
+  const diff=Math.abs(mag-state.baseline);
+  const hasLeftRest = diff > state.leaveThreshold;
+  const hasReturnedRest = diff < state.restTolerance;
 
-  if(state.phase==="low" && diff>high){
-    state.phase="high";
+  if(state.repPhase==="at_rest"){
+    if(hasLeftRest){
+      state.repPhase="away";
+      state.repStartedAt=t;
+      state.repPeakSpeed=state.speed;
+      state.repSpeedSamples=[];
+    }
+    return;
   }
-  if(state.phase==="high" && diff<low && (t-state.lastRepT)>minGap){
-    state.reps++;
-    state.lastRepT=t;
-    state.phase="low";
+
+  if(state.repPhase==="away"){
+    state.repPeakSpeed=Math.max(state.repPeakSpeed,state.speed);
+    state.repSpeedSamples.push(state.speed);
+
+    const elapsed=t-state.repStartedAt;
+
+    if(hasReturnedRest && elapsed>=state.minRepMs){
+      if(elapsed<=state.maxRepMs){
+        state.reps++;
+        const durationSec=elapsed/1000;
+        const avgRepSpeed=avg(state.repSpeedSamples);
+        state.repDurations.push(durationSec);
+        state.repDetails.push({
+          n: state.reps,
+          duration: durationSec,
+          maxSpeed: state.repPeakSpeed,
+          avgSpeed: avgRepSpeed
+        });
+        status("Rep completa chiusa: "+state.reps, "ok");
+      }
+      state.repPhase="at_rest";
+      state.repStartedAt=null;
+      state.repPeakSpeed=0;
+      state.repSpeedSamples=[];
+    }
+
+    if(elapsed>state.maxRepMs){
+      state.repPhase="at_rest";
+      state.repStartedAt=null;
+      state.repPeakSpeed=0;
+      state.repSpeedSamples=[];
+      status("Rep troppo lunga ignorata. Torna in posizione iniziale e riparti.", "warn");
+    }
   }
+}
+
+function avg(arr){
+  if(!arr || !arr.length) return 0;
+  return arr.reduce((a,b)=>a+b,0)/arr.length;
 }
 
 async function requestPermissionSafely(){
   const results={};
-
   if(typeof DeviceOrientationEvent!=="undefined" && typeof DeviceOrientationEvent.requestPermission==="function"){
     try{ results.orientation=await DeviceOrientationEvent.requestPermission(); }
     catch(e){ results.orientationError=e.message; }
   }
-
   if(typeof DeviceMotionEvent!=="undefined" && typeof DeviceMotionEvent.requestPermission==="function"){
     try{ results.motion=await DeviceMotionEvent.requestPermission(); }
     catch(e){ results.motionError=e.message; }
   }
-
   return results;
 }
 
 async function enable(){
   debug({clicked:true});
-
-  if(inIframe()){
-    status("La pagina sembra dentro un iframe. Google Sites probabilmente blocca i sensori. Aprila come pagina diretta HTTPS, non incorporata.", "err");
-  }
-
   if(typeof DeviceMotionEvent==="undefined"){
     status("DeviceMotionEvent non disponibile in questo browser.", "err");
-    debug({error:"DeviceMotionEvent undefined"});
     return;
   }
 
@@ -206,7 +285,7 @@ async function enable(){
   debug({permissions});
 
   if((permissions.motion && permissions.motion!=="granted") || (permissions.orientation && permissions.orientation!=="granted")){
-    status("Permesso non concesso dal browser/iOS. Se il demo esterno funziona, il problema è quasi sicuramente Google Sites/iframe.", "err");
+    status("Permesso non concesso dal browser/iOS.", "err");
     return;
   }
 
@@ -216,86 +295,181 @@ async function enable(){
   state.active=true;
   $("calibrateBtn").disabled=false;
   $("enableBtn").disabled=true;
-  status("Richiesta inviata. Muovi leggermente il telefono: se il valore Movimento sale, i sensori funzionano.", "ok");
+  status("Sensori attivi. Appoggia/fissa il telefono nella posizione iniziale e calibra.", "ok");
 
   setTimeout(()=>{
     if(state.eventsReceived===0){
-      status("Nessun dato sensore ricevuto. Se il sito demo funziona, carica questa app fuori da Google Sites, come link HTTPS diretto.", "err");
-      debug({noEventsAfterMs:2500});
-    } else {
-      status("Sensori attivi. Tieni il telefono fermo e premi Calibra.", "ok");
+      status("Nessun dato sensore ricevuto. Controlla che la pagina sia HTTPS diretta, non embed.", "err");
     }
   },2500);
 }
 
 function calibrate(){
-  if(state.samples.length<8){
-    status("Aspetta qualche secondo con il telefono fermo prima di calibrare.", "warn");
+  if(state.samples.length<12){
+    status("Aspetta 2-3 secondi con il telefono fermo nella posizione iniziale.", "warn");
     return;
   }
-  const recent=state.samples.slice(-60);
-  state.baseline=recent.reduce((a,b)=>a+b,0)/recent.length;
+  const recent=state.samples.slice(-90);
+  state.baseline=avg(recent);
   state.calibrated=true;
   $("startBtn").disabled=false;
-  status("Calibrazione completata. Ora puoi avviare la serie.", "ok");
-  debug({calibratedBaseline:state.baseline});
+  status("Posizione iniziale calibrata. La rep sarà contata solo quando ritorni vicino a questa posizione.", "ok");
+  debug({baseline:state.baseline});
 }
 
-function startStop(){
+function startSeries(){
   if(!state.calibrated){
-    status("Prima devi calibrare da fermo.", "warn");
+    status("Prima calibra la posizione iniziale.", "warn");
     return;
   }
 
-  state.running=!state.running;
-  $("startBtn").textContent=state.running ? "Ferma serie" : "Avvia serie";
-  $("startBtn").className=state.running ? "danger" : "secondary";
+  state.running=true;
+  state.reps=0;
+  state.velocity=0;
+  state.speed=0;
+  state.maxSpeed=0;
+  state.speedSamples=[];
+  state.repPhase="at_rest";
+  state.repStartedAt=null;
+  state.repDurations=[];
+  state.repDetails=[];
+  state.startedAt=Date.now();
+  state.finishedAt=null;
 
-  if(state.running){
-    state.reps=0;
-    state.velocity=0;
-    state.speed=0;
-    state.phase="low";
-    state.lastRepT=0;
-    state.startedAt=Date.now();
-    state.timer=setInterval(()=>{
-      const sec=Math.floor((Date.now()-state.startedAt)/1000);
-      $("timer").textContent=String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
-    },250);
-    status("Serie avviata.", "ok");
+  $("summary").classList.add("hidden");
+  $("startBtn").disabled=true;
+  $("finishBtn").disabled=false;
+  $("calibrateBtn").disabled=true;
+
+  state.timer=setInterval(()=>{
+    $("timer").textContent=fmtTime(Date.now()-state.startedAt);
+    updateUI();
+  },160);
+
+  status("Serie avviata. Ogni rep si chiude solo tornando alla posizione iniziale.", "ok");
+  updateUI();
+}
+
+function finishSeries(){
+  if(!state.running) return;
+
+  state.running=false;
+  state.finishedAt=Date.now();
+  clearInterval(state.timer);
+
+  $("startBtn").disabled=false;
+  $("finishBtn").disabled=true;
+  $("calibrateBtn").disabled=false;
+  $("timer").textContent=fmtTime(state.finishedAt-state.startedAt);
+
+  const summary = buildSummary();
+  saveSession(summary);
+  renderSummary(summary);
+  renderHistory();
+  status("Serie salvata e resoconto generato.", "ok");
+}
+
+function buildSummary(){
+  const durationMs=(state.finishedAt || Date.now())-state.startedAt;
+  const avgSpeed=avg(state.speedSamples);
+  const avgRep=avg(state.repDurations);
+  const bestRep=state.repDurations.length ? Math.min(...state.repDurations) : 0;
+
+  return {
+    id: "session_"+Date.now(),
+    date: new Date().toISOString(),
+    reps: state.reps,
+    durationMs,
+    maxSpeed: state.maxSpeed,
+    avgSpeed,
+    avgRepTime: avgRep,
+    bestRepTime: bestRep,
+    repsDetails: state.repDetails
+  };
+}
+
+function renderSummary(s){
+  $("summary").classList.remove("hidden");
+  $("sumReps").textContent=s.reps;
+  $("sumDuration").textContent=fmtTime(s.durationMs);
+  $("sumMaxSpeed").textContent=s.maxSpeed.toFixed(2);
+  $("sumAvgSpeed").textContent=s.avgSpeed.toFixed(2);
+  $("sumAvgRep").textContent=s.avgRepTime.toFixed(2);
+  $("sumBestRep").textContent=s.bestRepTime.toFixed(2);
+
+  if(!s.repsDetails.length){
+    $("repList").innerHTML="Nessuna rep completa rilevata.";
   } else {
-    clearInterval(state.timer);
-    status("Serie fermata. Reps: "+state.reps, "ok");
+    $("repList").innerHTML="<b>Dettaglio reps:</b><br>" + s.repsDetails.map(r =>
+      `Rep ${r.n}: ${r.duration.toFixed(2)}s · max ${r.maxSpeed.toFixed(2)} m/s · media ${r.avgSpeed.toFixed(2)} m/s`
+    ).join("<br>");
   }
+}
+
+function saveSession(s){
+  const arr=loadSessions();
+  arr.unshift(s);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr.slice(0,20)));
+}
+
+function loadSessions(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+  catch(e){ return []; }
+}
+
+function renderHistory(){
+  const arr=loadSessions();
+  if(!arr.length){
+    $("historyList").textContent="Nessuna serie salvata.";
+    return;
+  }
+  $("historyList").innerHTML=arr.slice(0,8).map(s=>{
+    const d=new Date(s.date);
+    return `<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.07)">
+      <b>${d.toLocaleString("it-IT")}</b><br>
+      ${s.reps} reps · ${fmtTime(s.durationMs)} · max ${s.maxSpeed.toFixed(2)} m/s · media ${s.avgSpeed.toFixed(2)} m/s · tempo medio rep ${s.avgRepTime.toFixed(2)}s
+    </div>`;
+  }).join("");
 }
 
 function reset(){
-  state.calibrated=false;
   state.running=false;
+  state.calibrated=false;
   state.samples=[];
   state.baseline=9.81;
   state.velocity=0;
   state.speed=0;
+  state.maxSpeed=0;
+  state.speedSamples=[];
   state.reps=0;
-  state.phase="low";
+  state.repPhase="at_rest";
+  state.repStartedAt=null;
+  state.repDurations=[];
+  state.repDetails=[];
   clearInterval(state.timer);
+
   $("timer").textContent="00:00";
   $("reps").textContent="0";
   $("speed").textContent="0.00";
   $("movement").textContent="0";
-  $("startBtn").textContent="Avvia serie";
-  $("startBtn").className="secondary";
+  $("currentRep").innerHTML='0.00<span class="unit">s</span>';
   $("startBtn").disabled=true;
+  $("finishBtn").disabled=true;
   $("calibrateBtn").disabled=!state.active;
-  status("Reset completato.", "warn");
+  $("summary").classList.add("hidden");
+
+  status("Reset completato. Calibra di nuovo la posizione iniziale.", "warn");
+  updateUI();
   debug({reset:true});
 }
 
 $("enableBtn").addEventListener("click", enable);
 $("calibrateBtn").addEventListener("click", calibrate);
-$("startBtn").addEventListener("click", startStop);
+$("startBtn").addEventListener("click", startSeries);
+$("finishBtn").addEventListener("click", finishSeries);
 $("resetBtn").addEventListener("click", reset);
 
+renderHistory();
 debug({ready:true});
 </script>
 </body>
